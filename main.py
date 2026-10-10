@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 p2p-sync: Zero-config encrypted peer-to-peer file synchronization CLI.
-Built by Parliament AI Crew.
+Built by Auto Qwen AI.
 """
 
 import os

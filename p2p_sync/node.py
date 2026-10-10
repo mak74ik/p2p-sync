@@ -51,15 +51,16 @@ class P2PNode:
                 await self.send_msg(writer, "manifest_response", {"manifest": local_m, "node_id": self.node_id})
 
             elif msg.get("type") == "file_request":
-                rel_path = msg["data"]["rel_path"]
-                full_path = os.path.join(self.sync_dir, rel_path)
-                if os.path.exists(full_path):
+                raw_rel = msg["data"]["rel_path"]
+                norm_rel = os.path.normpath(raw_rel).lstrip(os.sep)
+                full_path = os.path.abspath(os.path.join(self.sync_dir, norm_rel))
+                if full_path.startswith(self.sync_dir) and os.path.isfile(full_path):
                     with open(full_path, "rb") as f:
                         file_bytes = f.read()
                     # Encrypt file content
                     enc_bytes = self.crypto.encrypt(file_bytes)
                     await self.send_msg(writer, "file_data", {
-                        "rel_path": rel_path,
+                        "rel_path": norm_rel,
                         "data_hex": enc_bytes.hex()
                     })
 
@@ -101,11 +102,13 @@ class P2PNode:
                 enc_bytes = bytes.fromhex(resp["data"]["data_hex"])
                 file_bytes = self.crypto.decrypt(enc_bytes)
                 
-                target_path = os.path.join(self.sync_dir, rel_path)
-                os.makedirs(os.path.dirname(target_path), exist_ok=True)
-                with open(target_path, "wb") as f:
-                    f.write(file_bytes)
-                logger.info(f"Synchronized file: {rel_path}")
+                norm_rel = os.path.normpath(resp["data"]["rel_path"]).lstrip(os.sep)
+                target_path = os.path.abspath(os.path.join(self.sync_dir, norm_rel))
+                if target_path.startswith(self.sync_dir):
+                    os.makedirs(os.path.dirname(target_path), exist_ok=True)
+                    with open(target_path, "wb") as f:
+                        f.write(file_bytes)
+                    logger.info(f"Synchronized file: {norm_rel}")
             writer.close()
             await writer.wait_closed()
         except Exception as e:

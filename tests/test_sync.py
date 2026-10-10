@@ -1,7 +1,10 @@
 import os
+import sys
 import shutil
 import tempfile
 import unittest
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from p2p_sync.crypto import SyncCrypto
 from p2p_sync.manifest import SyncManifest, get_file_hash
 
