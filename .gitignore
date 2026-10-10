@@ -1,19 +1,31 @@
-# Bytecode & Cache
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual environments
-.env
-.venv/
-env/
-venv/
+# Rust
+target/
+Cargo.lock
 
-# Testing & Coverage
-.pytest_cache/
-.coverage
-htmlcov/
+# .NET / C#
+bin/
+obj/
+*.user
 
-# Operating system files
+# Node / Bun
+node_modules/
+bun.lockb
+
+# C / Asm
+*.o
+*.so
+*.out
+
+# System
 .DS_Store
-Thumbs.db
+.env
+
+*.pem
+*.enc
+*.key
+.pytest_cache/
